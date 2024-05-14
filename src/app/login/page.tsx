@@ -62,5 +62,4 @@ const handleSubmit = async (event: { preventDefault: () => void; }) => {
     </div>
   );
 };
-
 export default LoginPage;
