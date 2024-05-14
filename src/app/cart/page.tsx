@@ -63,7 +63,7 @@ useEffect(() => {
               <img
                 src={product.image}
                 alt={product.title}
-                className="w-48 h-48 object-cover mb-2"
+                className="w-full h-48 object-cover mb-2"
               />
               <h2 className="text-md font-bold text-center p-1">{product.title}</h2>
               <p className="text-md text-orange-600 p-1 font-semibold">Rp {product.price}</p>
