@@ -14,8 +14,20 @@ export default function Products ({query} :Props) {
   const [email, setEmail] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { data ,error } = useSWR(`https://fakestoreapi.com/products/?limit=12&search=${query}`,fetcher);
-  const [cart, setCart] = useState({});
+  const [cart, setCart] = useState([]);
   const router = useRouter();
+  const subtotal = cart.reduce((total, product) => {
+   const price = Number((product as { price: string }).price);
+   const quantity = Number((product as { quantity: number }).quantity);
+   
+  
+   if (isNaN(price) || isNaN(quantity)) {
+    console.error(`Invalid price or quantity for product ${(product as any).id}`);
+    return total;
+   }
+  
+   return total + (price * quantity);
+  }, 0).toFixed(2);
  
 
   useEffect(() => {
@@ -54,17 +66,21 @@ export default function Products ({query} :Props) {
     return null;
   }
 
+
   const handleAddToCart = (product: any) => {
-    const newCart: { [key: string]: number } = { ...cart };
-    if (newCart[product.id]) {
-      newCart[product.id] += 1;
+    const newCart: { id: number, quantity: number }[] = Array.isArray(cart) ? [...cart] : [];
+    const foundIndex = newCart.findIndex(item => item.id === product.id);
+  
+    if (foundIndex >= 0) {
+      // Jika produk sudah ada di dalam troli, tambah kuantitasnya
+      newCart[foundIndex].quantity += 1;
     } else {
-      newCart[product.id] = 1;
+      // Jika produk tidak ada di keranjang, tambahkan dengan sejumlah 1
+      newCart.push({ ...product, quantity: 1 });
     }
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
-
 
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return <div className="flex justify-center items-center">
@@ -102,14 +118,9 @@ return (
           </div>
         </Link>
       </div>
-      <span className="p-4 text-red-900 text-xl font-semibold">
+      <span className="p-4 text-orange-600 text-xl font-semibold">
         Total : Rp{" "}
-        {Object.keys(cart).reduce(
-          (item, id) =>
-            item +
-            (data.find((product: any) => product.id === +id)?.price || 0) *
-              cart[id as keyof typeof cart], 0
-        ).toFixed(2)}
+        {subtotal}
       </span>
       <div>
         <button
@@ -121,9 +132,8 @@ return (
       </div>
     </nav>
     <div className="p-8 flex flex-col justify-center items-center">
-
       <h1 className="mt-20 flex text-2xl font-bold">Daftar Products</h1>
-      <h2 className="m-2 font-bold p-4">
+      <h2 className="m-2 text-xl font-bold p-4">
         Selamat datang{" "}
         <span className="font-semibold italic text-xl text-emerald-600">
           {isLoggedIn && email ? ` ${email}` : ""}
@@ -131,24 +141,24 @@ return (
       </h2>
       <div className="mt-10 grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {data.map((product: any) => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md p-4">
+          <div key={product.id} className="flex flex-col justify-center items-center bg-white rounded-lg shadow-md p-4">
             <img
               src={product.image}
               alt={product.title}
               className="w-full h-64 object-cover mb-4"
             />
-            <h2 className="text-lg font-semibold">{product.title}</h2>
-            <p className="text-gray-500 overflow-ellipsis overflow-hidden">
+            <h2 className="text-lg font-semibold text-center">{product.title}</h2>
+            {/* <p className="text-gray-500 overflow-ellipsis overflow-hidden">
               {product.description.length > 20
                 ? product.description.slice(0, 20) + "..."
                 : product.description}
-            </p>
-            <p className="text-gray-700 font-bold mt-2">Rp {product.price}</p>
+            </p> */}
+            <p className="text-orange-600 font-bold mt-2">Rp {product.price}</p>
             <button
               onClick={() => handleAddToCart(product)}
-              className="bg-blue-500 text-white px-4 py-2 mt-4 rounded-md"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 mt-4 rounded-md"
             >
-              Add to Cart
+              + Add to Cart
             </button>
           </div>
         ))}
@@ -157,6 +167,5 @@ return (
   </div>
 );
 };
-
 
 
