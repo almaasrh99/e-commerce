@@ -20,6 +20,7 @@ const handleSubmit = async (event: { preventDefault: () => void; }) => {
 
     }
     localStorage.setItem("loggedIn", "true");
+    localStorage.setItem('email', email);
     router.push("/products");
 };
 

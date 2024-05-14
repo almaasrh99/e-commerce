@@ -5,27 +5,27 @@ import { useState, useEffect } from 'react';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-interface Props {
-    query: string;
-}
+// interface Props {
+//     query: string;
+// }
 
 interface Product {
     id: number;
     price: number;
   }
 
-export default function CartPage({query}: Props) {
+export default function CartPage() {
     const [subtotal, setSubtotal] = useState(0);
     const [cart, setCart] = useState([]);
-    const { data:allProducts, error } = useSWR(`https://fakestoreapi.com/carts?${query}`,fetcher);
+    const { data: allProducts, error } = useSWR(`https://fakestoreapi.com/products/?${Object.keys(cart).map((product: any) => product.id)}`, fetcher);
 
     useEffect(() => {
-            const storedCart = localStorage.getItem('cart');
-            if (storedCart) {
-                setCart(JSON.parse(storedCart));
-            }
-            
-        }, []);
+        const storedCart = localStorage.getItem('cart');
+        if (storedCart) {
+            setCart(JSON.parse(storedCart) || []);
+        }
+    }, []);
+
 
         useEffect(() => {
             if (allProducts && cart.length > 0) {
@@ -37,8 +37,7 @@ export default function CartPage({query}: Props) {
                 setSubtotal(totalSubtotal);
             }
         }, [allProducts, cart]);
-
-        
+           
 
     if (error) return <div>Error: {error.message}</div>;
     if (!allProducts) return <div className="flex justify-center items-center">
@@ -67,6 +66,8 @@ export default function CartPage({query}: Props) {
         window.location.href = '/checkout';
     };
 
+    console.log(allProducts);
+
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Cart</h1>
@@ -82,11 +83,11 @@ export default function CartPage({query}: Props) {
                 ))}
             </div>
             
-            <div className="mt-4">
-                <p className="text-lg font-bold">Total: Rp {subtotal}</p>
+            <div className="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)]">
+                <p className="text-xl font-bold">Total: Rp {subtotal}</p>
                 <button
                     onClick={handleCheckout}
-                    className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                    className="bg-blue-500 w-64 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
                 >
                     Checkout
                 </button>

@@ -12,15 +12,17 @@ interface Props {
 
 export default function Products ({query} :Props) {
   const [email, setEmail] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { data ,error } = useSWR(`https://fakestoreapi.com/products/?limit=12&search=${query}`,fetcher);
   const [cart, setCart] = useState({});
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+ 
 
   useEffect(() => {
     // Melakukan pengecekan apakah user sudah login atau belum
     const loggedIn = typeof window !== "undefined" && localStorage.getItem("loggedIn");
     const storedEmail = typeof window !== "undefined" && localStorage.getItem("email");
+   
 
     if (!loggedIn) {
       // Jika user tidak melakukan login dialihkan ke halaman login
@@ -28,12 +30,21 @@ export default function Products ({query} :Props) {
       router.push("/login");
     } else {
       setIsLoggedIn(true);
+      setEmail(storedEmail || "");
     }
 
   }, []);
 
+  useEffect(() => {
+   // Mengambil data cart dari local storage saat memuat halaman
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      setCart(JSON.parse(storedCart));
+    }
+  }, []);
+
   const handleLogout = () => {
-    //Logout mengahpus data login di local storage
+    //Logout menghapus data login di local storage
     localStorage.removeItem("loggedIn");
     //Redirect ke halaman login
     router.push("/login");
@@ -44,7 +55,7 @@ export default function Products ({query} :Props) {
   }
 
   const handleAddToCart = (product: any) => {
-    const newCart: { [key: string]: number } = {...cart };
+    const newCart: { [key: string]: number } = { ...cart };
     if (newCart[product.id]) {
       newCart[product.id] += 1;
     } else {
@@ -53,6 +64,7 @@ export default function Products ({query} :Props) {
     setCart(newCart);
     localStorage.setItem('cart', JSON.stringify(newCart));
   };
+
 
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return <div className="flex justify-center items-center">
@@ -74,6 +86,8 @@ export default function Products ({query} :Props) {
   </svg>
   <span className="p-4 text-slate-900">Sedang memuat...</span>
 </div>;
+
+console.log(data);
 
 return (
   <div>
@@ -108,10 +122,10 @@ return (
     </nav>
     <div className="p-8 flex flex-col justify-center items-center">
 
-      <h1 className="mt-20 flex text-2xl font-bold">Products</h1>
-      <h2 className="m-4 font-bold p-4">
+      <h1 className="mt-20 flex text-2xl font-bold">Daftar Products</h1>
+      <h2 className="m-2 font-bold p-4">
         Selamat datang{" "}
-        <span className="font-semibold italic text-blue-600">
+        <span className="font-semibold italic text-xl text-emerald-600">
           {isLoggedIn && email ? ` ${email}` : ""}
         </span>
       </h2>
@@ -144,13 +158,4 @@ return (
 );
 };
 
-const addToCart = (product: any) => {
-  const cart = localStorage.getItem('cart');
-  if (cart) {
-    const cartProducts = JSON.parse(cart);
-    cartProducts.push(product);
-    localStorage.setItem('cart', JSON.stringify(cartProducts));
-  } else {
-    localStorage.setItem('cart', JSON.stringify([product]));
-  }
-};
+
