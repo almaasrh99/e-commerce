@@ -1,6 +1,7 @@
 "use client"
 import useSWR from "swr";
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -15,17 +16,19 @@ interface Product {
   }
 
 export default function CartPage() {
+    const router = useRouter();
     const [subtotal, setSubtotal] = useState(0);
     const [cart, setCart] = useState([]);
     const { data: allProducts, error } = useSWR(`https://fakestoreapi.com/products/?${Object.keys(cart).map((product: any) => product.id)}`, fetcher);
-
+    
+    console.log(allProducts);
+    
     useEffect(() => {
         const storedCart = localStorage.getItem('cart');
         if (storedCart) {
             setCart(JSON.parse(storedCart) || []);
         }
     }, []);
-
 
         useEffect(() => {
             if (allProducts && cart.length > 0) {
@@ -63,13 +66,13 @@ export default function CartPage() {
     const handleCheckout = () => {
         localStorage.removeItem('cart');
         // Redirect ke halaman checkout 
-        window.location.href = '/checkout';
+        router.push("./checkout")
     };
 
-    console.log(allProducts);
+  
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 mb-20">
             <h1 className="text-2xl font-bold mb-4">Cart</h1>
             <div className="grid grid-cols-3 gap-4">
                 {Object.keys(cart).map((product: any) => (
@@ -84,7 +87,7 @@ export default function CartPage() {
             </div>
             
             <div className="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)]">
-                <p className="text-xl font-bold">Total: Rp {subtotal}</p>
+                <p className="text-xl text-red-900 font-bold">Total: Rp {subtotal}</p>
                 <button
                     onClick={handleCheckout}
                     className="bg-blue-500 w-64 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
@@ -95,5 +98,4 @@ export default function CartPage() {
         </div>
     );
 }
-
     
