@@ -50,7 +50,8 @@ useEffect(() => {
     // Redirect ke halaman checkout
     router.push("./checkout");
   };
-  const subtotal = cart.reduce((total, product: Product) => total + (product.price * product.quantity), 0);
+
+  const subtotal = cart.reduce((total, product: Product) => total + (product.price * product.quantity), 0).toFixed(2);
   return (
     <div className="container mx-auto p-4 mb-20">
       <h1 className="text-2xl font-bold mb-4">Cart</h1>
@@ -62,7 +63,7 @@ useEffect(() => {
               <img
                 src={product.image}
                 alt={product.title}
-                className="w-full h-48 object-cover mb-2"
+                className="w-48 h-48 object-cover mb-2"
               />
               <h2 className="text-md font-bold text-center p-1">{product.title}</h2>
               <p className="text-md text-orange-600 p-1 font-semibold">Rp {product.price}</p>
@@ -75,6 +76,7 @@ useEffect(() => {
         })}
       </div>
       </div>
+      
 
       <div className="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)]">
 
