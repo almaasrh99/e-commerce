@@ -111,16 +111,16 @@ return (
       <div>
         <Link href='./cart'>
           <div className="flex items-center">
-            <i className="fa fa-shopping-cart" aria-hidden="true"></i>
-            <p className="text-blue-600 font-semibold text-md ml-2">
-              Cart : {Object.keys(cart).length} items
+            <i className="text-blue-600 font-semibold fa fa-shopping-cart text-md p-2" aria-hidden="true"></i>
+            <p className="text-slate-00 font-semibold text-md ml-2">
+              {Object.keys(cart).length} items
             </p>
           </div>
         </Link>
       </div>
-      <span className="p-4 text-orange-600 text-xl font-semibold">
-        Total : Rp{" "}
-        {subtotal}
+      <span className="p-4 text-slate-900 text-xl font-semibold">
+        Total : <span className="text-orange-600 text-xl font-semibold">Rp{" "}
+        {subtotal}</span>
       </span>
       <div>
         <button
