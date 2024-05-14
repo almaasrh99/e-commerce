@@ -75,7 +75,6 @@ useEffect(() => {
         })}
       </div>
       </div>
-      
 
       <div className="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)]">
 
