@@ -7,7 +7,6 @@ export default function Home() {
     
       <Link href="/login"><button className='p-4 bg-blue-500 w-64 text-xl font-semibold text-white rounded-md'>Login</button></Link>
   
-     
    </div>
   );
 }
