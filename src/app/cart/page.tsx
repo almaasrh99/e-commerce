@@ -1,27 +1,27 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { AwesomeButton } from "react-awesome-button";
 
 interface Product {
   id: number;
   price: number;
-  quantity: number; 
+  quantity: number;
 }
 
 export default function CartPage() {
-const router = useRouter();
-const [cart, setCart] = useState([]);
+  const router = useRouter();
+  const [cart, setCart] = useState([]);
 
-useEffect(() => {
-  const storedCart = localStorage.getItem("cart");
-  if (storedCart) {
-    setCart(JSON.parse(storedCart) || []);
-  }
-}, []);
-
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCart(JSON.parse(storedCart) || []);
+    }
+  }, []);
 
   // if (error) return <div>Error: {error.message}</div>;
-  if (!cart || cart.length === 0) {
+  if (!cart) {
     return (
       <div className="flex justify-center items-center">
         <svg
@@ -43,6 +43,14 @@ useEffect(() => {
         <span className="p-4 text-gray-900">Sedang Memuat...</span>
       </div>
     );
+  } else if (cart.length === 0) {
+    return (
+      <div className="flex justify-center items-center">
+        <span className="flex justify-center items-center p-4 text-gray-900 text-2xl font-bold">
+          No products in cart
+        </span>
+      </div>
+    );
   }
 
   const handleCheckout = () => {
@@ -51,39 +59,59 @@ useEffect(() => {
     router.push("./checkout");
   };
 
-  const subtotal = cart.reduce((total, product: Product) => total + (product.price * product.quantity), 0).toFixed(2);
+  const subtotal = cart
+    .reduce(
+      (total, product: Product) => total + product.price * product.quantity,
+      0
+    )
+    .toFixed(2);
   return (
-    <div className="container mx-auto p-4 mb-20">
-      <h1 className="text-2xl font-bold mb-4">Cart</h1>
+    <div className="container mx-auto p-4 mb-20 xs:mb-40">
+      <h1 className="text-2xl font-bold mb-4 sm:text-center xs:text-center">
+        Cart
+      </h1>
       <div>
-      <div className="grid grid-cols-3 gap-4">
-        {cart.map((product: any) => {
-          return product ? (
-            <div key={product.id} className="flex flex-col justify-center items-center border p-4 bg-white shadow md rounded-md">
-              <img
-                src={product.image}
-                alt={product.title}
-                className="w-full h-48 object-cover mb-2"
-              />
-              <h2 className="text-md font-bold text-center p-1">{product.title}</h2>
-              <p className="text-md text-orange-600 p-1 font-semibold">Rp {product.price}</p>
-              <p className="text-md text-gray-700">
-                Qty: {product.quantity}
-              </p>
-              <p className=" text-xl text-gray-800 font-bold">Total : <span className="text-orange-600">Rp {(product.price * product.quantity)}</span></p>
-            </div>
-          ) : null;
-        })}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {cart.map((product: any) => {
+            return product ? (
+              <div
+                key={product.id}
+                className="flex flex-col justify-center items-center border p-4 bg-white shadow md rounded-md"
+              >
+                <img
+                  src={product.image}
+                  alt={product.title}
+                  className="w-full h-48 object-cover mb-2 xs:h-32 xs:w-64"
+                />
+                <h2 className="text-md font-bold text-center p-1">
+                  {product.title}
+                </h2>
+                <p className="text-md text-orange-600 p-1 font-semibold">
+                  Rp {product.price}
+                </p>
+                <p className="text-md text-gray-700">Qty: {product.quantity}</p>
+                <p className=" text-xl text-gray-800 font-bold">
+                  Total :{" "}
+                  <span className="text-orange-600">
+                    Rp {product.price * product.quantity}
+                  </span>
+                </p>
+              </div>
+            ) : null;
+          })}
+        </div>
       </div>
-      </div>
-      
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white p-6 flex justify-between items-center shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)]">
-
-        <p className="text-2xl text-slate-900 font-bold">Subtotal : <span className="text-orange-600">Rp {subtotal}</span></p>
+      <div className="fixed bottom-0 left-0 right-0 bg-white p-6 flex flex-col md:flex-row justify-between items-center shadow-[0_35px_60px_-15px_rgba(0,0,0,0.8)]">
+        <p className="text-xl text-slate-900 font-bold mb-4 xs:text-lg md:mb-0">
+          Subtotal :{" "}
+          <span className="text-orange-600 text-2xl xs:text-xl">
+            Rp {subtotal}
+          </span>
+        </p>
         <button
           onClick={handleCheckout}
-          className="bg-blue-600 w-64 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-600 w-full md:w-auto hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 md:mt-0"
         >
           Checkout
         </button>
