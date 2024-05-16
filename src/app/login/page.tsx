@@ -12,16 +12,16 @@ const LoginPage = () => {
   const router = useRouter();
   const [googleAuth, setGoogleAuth] = useState(null);
 
-  // useEffect(() => {
-  //   const initClient = () => {
-  //     gapi.client.init({
-  //       clientId:
-  //         "966773496387-97t4ip3h9tqa5k9d62pujg8qli1k2731.apps.googleusercontent.com",
-  //       scope: "email profile",
-  //     });
-  //   };
-  //   gapi.load("client:auth2", initClient);
-  // }, []);
+  useEffect(() => {
+    const initClient = () => {
+      gapi.client.init({
+        clientId:
+          "966773496387-97t4ip3h9tqa5k9d62pujg8qli1k2731.apps.googleusercontent.com",
+        scope: "email profile",
+      });
+    };
+    gapi.load("client:auth2", initClient);
+  }, []);
 
   const responseGoogle = (response: {
     tokenId: string;
